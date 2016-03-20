@@ -1,17 +1,25 @@
 'use strict';
 
-module.exports = (fileRouter) => {
-  fileRouter.route('/files')
-  .get((req, res) => {
+module.exports = (Router) => {
+  Router.route('/')
+  .all((req, res, next) => {
+    console.log('received /files request');
+    next();
+  })
+  .get((req, res, next) => {
     console.log('received GET request');
+    next();
   })
-  .post((req, res) => {
+  .post((req, res, next) => {
     console.log('received POST request');
+    next();
   })
-  .put((req, res) => {
+  .put((req, res, next) => {
     console.log('received PUT request');
+    next();
   })
-  .delete((req, res) => {
+  .delete((req, res, next) => {
     console.log('received DELETE request');
+    next();
   })
 }
