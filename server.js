@@ -10,6 +10,11 @@ var models = require(__dirname + '/models');
 var User = models.User;
 var File = models.File;
 
+var AWS = require('aws-sdk');
+AWS.config.update({region: 'us-west-2'});
+var s3 = new AWS.S3();
+
+
 var userRouter = express.Router();
 var fileRouter = express.Router();
 userRouter.use((req, res, next) => {
@@ -20,8 +25,8 @@ fileRouter.use((req, res, next) => {
   console.log('received request');
   next();
 })
-require(__dirname + '/routes/user_routes.js')(userRouter);
-require(__dirname + '/routes/file_routes.js')(fileRouter);
+require(__dirname + '/routes/user_routes.js')(userRouter, s3);
+require(__dirname + '/routes/file_routes.js')(fileRouter, s3);
 
 app.use(bodyParser.json());
 app.use('/users', userRouter);
