@@ -75,14 +75,15 @@ module.exports = (Router, S3, config) => {
       if(err) {
         console.log(curUser, err);
       } else {
-        var key = req.params.user + '/' + req.body.fileName;
+        var fName = req.body.fileName;
+        var uName = req.params.user;
+        var key = uName + '/' + fName;
         var params = {
           'Bucket': config.bucketName,
           'Key': key,
           'ACL': 'public-read',
           'Body': req.body.content
         };
-        console.log(params);
         S3.upload(params, function(err, data) {
           if(err) {
             console.log(err);
@@ -91,13 +92,16 @@ module.exports = (Router, S3, config) => {
             var newUrl = 'https://s3-' + config.AWSRegion + '.amazonaws.com/' +
                          config.bucketName + '/' + key;
             var newFile = new File({
-              fileName: req.body.filename,
+              fileName: fName,
               fileUrl: newUrl
             });
             newFile.save((err, file, next) => {
               console.log(file, ' successfully saved in db');
-              console.log('with URL: ' + newUrl);
-              curUser.update({ $push: { files: file._id }});
+              // curUser.update({ $push: { files: file._id } });
+              User.update({name: uName}, { $push: { files: file._id } }, (err, data) => {
+                if(err) console.log(err);
+              })
+              debugger;
               console.log(file._id);
               console.log(curUser);
             })
