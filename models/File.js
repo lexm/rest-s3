@@ -4,4 +4,6 @@ module.exports = (mongoose, models) => {
     name: String,
     fileUrl : String
   })
+  var File = mongoose.model('File', fileSchema)
+  models.File = File;
 }

@@ -3,16 +3,12 @@
 var fs = require('fs');
 var mongoose = require('mongoose');
 var express = require('express');
+var bodyParser = require('body-parser');
 var config = require(__dirname + '/config/env');
 var app = express();
-
-// var Router = express.Router();
-// require(__dirname + '/routes/user_routes.js')(Router);
-// require(__dirname + '/routes/file_routes.js')(Router);
-// Router.use((req, res, next) => {
-//   console.log('received request');
-//   next();
-// })
+var models = require(__dirname + '/models');
+var User = models.User;
+var File = models.File;
 
 var userRouter = express.Router();
 var fileRouter = express.Router();
@@ -27,6 +23,7 @@ fileRouter.use((req, res, next) => {
 require(__dirname + '/routes/user_routes.js')(userRouter);
 require(__dirname + '/routes/file_routes.js')(fileRouter);
 
+app.use(bodyParser.json());
 app.use('/users', userRouter);
 app.use('/files', fileRouter);
 
