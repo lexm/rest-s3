@@ -1,8 +1,8 @@
 'use strict';
 
 var models = require(__dirname + '/../models');
-// var config = require(__dirname + '/../config/env');
 var User = models.User;
+var File = models.File;
 
 module.exports = (Router, S3, config) => {
   Router.route('/')
@@ -75,9 +75,7 @@ module.exports = (Router, S3, config) => {
       if(err) {
         console.log(curUser, err);
       } else {
-        console.log(curUser);
         var key = req.params.user + '/' + req.body.fileName;
-        console.log(key);
         var params = {
           'Bucket': config.bucketName,
           'Key': key,
@@ -92,11 +90,24 @@ module.exports = (Router, S3, config) => {
             console.log('loaded data to ' + key);
             var newUrl = 'https://s3-' + config.AWSRegion + '.amazonaws.com/' +
                          config.bucketName + '/' + key;
-            console.log(newUrl);
+            var newFile = new File({
+              fileName: req.body.filename,
+              fileUrl: newUrl
+            });
+            newFile.save((err, file, next) => {
+              console.log(file.fileName + ' successfully saved in db');
+              console.log('with URL: ' + newUrl);
+              curUser.files.push(file._id);
+              console.log(file._id);
+              console.log(curUser);
+            })
             next();
           }
         })
       }
     })
+  })
+  .get((req, res, next) => {
+    File.find()
   })
 }

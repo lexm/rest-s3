@@ -1,7 +1,7 @@
 module.exports = (mongoose, models) => {
   var Schema = mongoose.Schema;
   var fileSchema = new mongoose.Schema({
-    filename: String,
+    fileName: String,
     fileUrl : String
   })
   var File = mongoose.model('File', fileSchema)

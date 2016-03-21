@@ -1,5 +1,9 @@
 'use strict';
 
+var models = require(__dirname + '/../models');
+var User = models.User;
+var File = models.File;
+
 module.exports = (Router) => {
   Router.route('/')
   .all((req, res, next) => {
@@ -8,7 +12,10 @@ module.exports = (Router) => {
   })
   .get((req, res, next) => {
     console.log('received GET request');
-    next();
+    File.find({}, (err, files) => {
+      res.json({data: files});
+      next();
+    })
   })
   .post((req, res, next) => {
     console.log('received POST request');
