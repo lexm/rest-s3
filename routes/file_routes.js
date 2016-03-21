@@ -21,12 +21,21 @@ module.exports = (Router) => {
     console.log('received POST request');
     next();
   })
+
+  Router.route('/:id')
   .put((req, res, next) => {
     console.log('received PUT request');
     next();
   })
   .delete((req, res, next) => {
     console.log('received DELETE request');
-    next();
+    File.findById(req.params.id, (err, file) => {
+      console.log(file);
+      file.remove((err, file) => {
+        res.json({message: 'file removed'});
+        res.end();
+        next();
+      });
+    });
   })
 }

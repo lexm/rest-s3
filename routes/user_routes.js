@@ -95,9 +95,9 @@ module.exports = (Router, S3, config) => {
               fileUrl: newUrl
             });
             newFile.save((err, file, next) => {
-              console.log(file.fileName + ' successfully saved in db');
+              console.log(file, ' successfully saved in db');
               console.log('with URL: ' + newUrl);
-              curUser.files.push(file._id);
+              curUser.update({ $push: { files: file._id }});
               console.log(file._id);
               console.log(curUser);
             })
@@ -108,6 +108,6 @@ module.exports = (Router, S3, config) => {
     })
   })
   .get((req, res, next) => {
-    File.find()
+    User.findOne()
   })
 }
