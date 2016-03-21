@@ -1,10 +1,10 @@
 'use strict';
 
 var models = require(__dirname + '/../models');
-var config = require(__dirname + '/../config/env');
+// var config = require(__dirname + '/../config/env');
 var User = models.User;
 
-module.exports = (Router, S3) => {
+module.exports = (Router, S3, config) => {
   Router.route('/')
   .post((req, res, next) => {
     User.find({name: req.body.name}, (err, users) => {
@@ -71,6 +71,32 @@ module.exports = (Router, S3) => {
 
   Router.route('/:user/files')
   .post((req, res, next) => {
-    User.findOne()
+    User.findOne({'name': req.params.user}, (err, curUser) => {
+      if(err) {
+        console.log(curUser, err);
+      } else {
+        console.log(curUser);
+        var key = req.params.user + '/' + req.body.fileName;
+        console.log(key);
+        var params = {
+          'Bucket': config.bucketName,
+          'Key': key,
+          'ACL': 'public-read',
+          'Body': req.body.content
+        };
+        console.log(params);
+        S3.upload(params, function(err, data) {
+          if(err) {
+            console.log(err);
+          } else {
+            console.log('loaded data to ' + key);
+            var newUrl = 'https://s3-' + config.AWSRegion + '.amazonaws.com/' +
+                         config.bucketName + '/' + key;
+            console.log(newUrl);
+            next();
+          }
+        })
+      }
+    })
   })
 }
