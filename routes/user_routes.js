@@ -6,14 +6,14 @@ var File = models.File;
 
 module.exports = (Router, S3, config) => {
   Router.route('/')
-  .post((req, res, next) => {
+  .post((req, res) => {
     User.find({name: req.body.name}, (err, users) => {
       if (users.length) {
         res.write(users[0].name + ' already added');
-        res.end()
+        res.end();
       } else {
         var newUser = new User(req.body);
-        newUser.save((err, user, next) => {
+        newUser.save((err, user) => {
           res.write('Welcome ' + user.name);
           res.end();
         });
@@ -25,7 +25,7 @@ module.exports = (Router, S3, config) => {
           } else {
             console.log('successfully created folder for ' + req.body.name);
           }
-        })
+        });
       }
     });
   })
@@ -34,17 +34,16 @@ module.exports = (Router, S3, config) => {
       res.json({data: users});
       next();
     });
-    console.log('received GET request');
-  })
+  });
 
   Router.route('/:user')
-  .get((req, res, next) => {
+  .get((req, res) => {
     User.find({name: req.params.user}, (err, namedUser) => {
       res.json(namedUser);
     });
   })
   .put((req, res, next) => {
-    uName = req.params.user;
+    var uName = req.params.user;
     User.findOneAndUpdate({name: uName}, {$set: req.body}, (err, namedUser) => {
       if(err) {
         res.write('user ' + uName + ' not found');
@@ -53,14 +52,13 @@ module.exports = (Router, S3, config) => {
         res.write('user ' + uName + ' renamed to ' + namedUser.name);
         res.end();
       }
-    })
+    });
     console.log('received PUT request for ' + req.params.user);
     next();
   })
   .delete((req, res, next) => {
     var exUser = req.params.user;
     User.findOne({'name': exUser}, (err, namedUser) => {
-      console.log(namedUser);
       namedUser.remove((err, namedUser) => {
         res.write('user ' + exUser + ' removed');
         res.end();
@@ -71,10 +69,10 @@ module.exports = (Router, S3, config) => {
   });
 
   Router.route('/:user/files')
-  .post((req, res, next) => {
+  .post((req, res) => {
     User.findOne({'name': req.params.user}, (err, curUser) => {
       if(err) {
-        console.log(curUser, err);
+        console.log(err);
       } else {
         var fName = req.body.fileName;
         var uName = req.params.user;
@@ -96,8 +94,7 @@ module.exports = (Router, S3, config) => {
               fileName: fName,
               fileUrl: newUrl
             });
-            newFile.save((err, file, next) => {
-              console.log(file, ' successfully saved in db');
+            newFile.save((err, file) => {
               User.update({name: uName}, { $push: { files: file._id } }, (err, data) => {
                 if(err) {
                   console.log(err);
@@ -105,30 +102,22 @@ module.exports = (Router, S3, config) => {
                   res.write('file ' + file.fileName  + ' added for user ' + uName);
                   res.end();
                 }
-              })
-              debugger;
-              console.log(file._id);
-              console.log(curUser);
-            })
+              });
+            });
           }
-        })
+        });
       }
-    })
+    });
   })
-  .get((req, res, next) => {
+  .get((req, res) => {
     User
     .findOne({'name': req.params.user}, (err, curUser) => {
       if(err) {console.log(err);}
     })
     .populate('files')
     .exec((err, user) => {
-      user.files.forEach((cur, idx) => {
-        res.write('File #' + (idx + 1));
-        res.write('\nFilename: ' + cur.fileName);
-        res.write('\nURL:      ' + cur.fileUrl);
-        res.write('\n\n');
-      })
+      res.json(user.files);
       res.end();
-    })
-  })
-}
+    });
+  });
+};
