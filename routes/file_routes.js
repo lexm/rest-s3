@@ -15,12 +15,12 @@ module.exports = (Router) => {
     File.find({}, (err, files) => {
       res.json({data: files});
       next();
-    })
+    });
   })
   .post((req, res, next) => {
     console.log('received POST request');
     next();
-  })
+  });
 
   Router.route('/:id')
   .put((req, res, next) => {
@@ -37,5 +37,5 @@ module.exports = (Router) => {
         next();
       });
     });
-  })
-}
+  });
+};
