@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "author": "",
   "license": "ISC",
@@ -12,7 +14,8 @@
     "aws-sdk": "^2.2.45",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
-    "mongoose": "^4.4.8"
+    "mongoose": "^4.4.8",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -20,5 +23,6 @@
     "gulp": "^3.9.1",
     "gulp-eslint": "^2.0.0",
     "gulp-mocha": "^2.2.0"
-  }
+  },
+  "snyk": true
 }
